@@ -86,7 +86,6 @@ export default function Index() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter, stockFilter, debouncedQuery, sortValue]);
 
-  // Handle create product response
   useEffect(() => {
     if (createFetcher.data) {
       if (createFetcher.data.success) {
@@ -304,7 +303,6 @@ export default function Index() {
                 resourceName={{ singular: "product", plural: "products" }}
                 items={products}
                 renderItem={(item) => {
-                  // Extract numeric product ID from Shopify GID
                   const shopifyIdMatch = item.id.match(/Product\/(\d+)/);
                   const shopifyId = shopifyIdMatch ? shopifyIdMatch[1] : null;
                   const adminUrl = shopifyId ? `https://admin.shopify.com/store/${shopDomain}/products/${shopifyId}` : undefined;
