@@ -36,14 +36,41 @@ export default function CreateProductModal({ open, loading, newProduct, onChange
             onChange={(value) => onChange("title", value)}
             placeholder="Enter product title"
             autoComplete="off"
+            required
           />
           <TextField
             label="Description"
             value={newProduct.description}
             onChange={(value) => onChange("description", value)}
-            placeholder="Enter product description"
+            placeholder="Enter product description (optional)"
             multiline={3}
             autoComplete="off"
+          />
+          <TextField
+            label="Price"
+            type="number"
+            value={newProduct.price}
+            onChange={(value) => onChange("price", value)}
+            placeholder="Enter price (e.g. 19.99)"
+            autoComplete="off"
+            min={0}
+            required
+          />
+          <TextField
+            label="Image URL"
+            value={newProduct.image}
+            onChange={(value) => onChange("image", value)}
+            placeholder="Enter image URL (optional)"
+            autoComplete="off"
+          />
+          <TextField
+            label="Inventory Quantity"
+            type="number"
+            value={newProduct.inventory}
+            onChange={(value) => onChange("inventory", value)}
+            placeholder="Enter inventory quantity (optional)"
+            autoComplete="off"
+            min={0}
           />
         </FormLayout>
       </Modal.Section>

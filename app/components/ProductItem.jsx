@@ -12,7 +12,6 @@ import { ImageIcon } from "@shopify/polaris-icons";
  * @param {string} props.product.status
  * @param {number} props.product.inventoryQuantity
  * @param {string} [props.url]
- * @param {function} [props.onClick]
  */
 export default function ProductItem({ product, url, onClick }) {
   const { id, title, price, image, status, inventoryQuantity } = product;
@@ -41,7 +40,6 @@ export default function ProductItem({ product, url, onClick }) {
       accessibilityLabel={`View details for ${title}`}
       url={url}
       external
-      onClick={onClick}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>

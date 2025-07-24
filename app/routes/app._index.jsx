@@ -60,7 +60,10 @@ export default function Index() {
   const [modalActive, setModalActive] = useState(false);
   const [newProduct, setNewProduct] = useState({
     title: "",
-    description: ""
+    description: "",
+    price: "",
+    image: "",
+    inventory: ""
   });
 
   const [toastActive, setToastActive] = useState(false);
@@ -88,7 +91,7 @@ export default function Index() {
     if (createFetcher.data) {
       if (createFetcher.data.success) {
         setModalActive(false);
-        setNewProduct({ title: "", description: "" });
+        setNewProduct({ title: "", description: "", price: "", image: "", inventory: "" });
         setToastMessage("Product created successfully!");
         setToastStatus("success");
         setToastActive(true);
@@ -99,7 +102,8 @@ export default function Index() {
         setToastActive(true);
       }
     }
-  }, [createFetcher.data, fetchProducts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [createFetcher.data]);
 
   useEffect(() => {
     if (fetcher.data) {
@@ -171,9 +175,24 @@ export default function Index() {
   }, []);
 
   const handleCreateProduct = useCallback(() => {
+    if (!newProduct.title) {
+      setToastMessage("Product title is required.");
+      setToastStatus("error");
+      setToastActive(true);
+      return;
+    }
+    if (!newProduct.price || isNaN(Number(newProduct.price)) || Number(newProduct.price) < 0) {
+      setToastMessage("Valid price is required.");
+      setToastStatus("error");
+      setToastActive(true);
+      return;
+    }
     const formData = new FormData();
     formData.append("title", newProduct.title);
     formData.append("description", newProduct.description);
+    formData.append("price", newProduct.price);
+    formData.append("image", newProduct.image);
+    formData.append("inventory", newProduct.inventory);
     createFetcher.submit(formData, {
       method: "POST",
       action: "/api/products"
