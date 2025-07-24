@@ -122,14 +122,10 @@ export async function action({ request }) {
       }, { status: 400 });
     }
 
-    // 1. Create the product (with optional image)
     const productInput = {
       title,
       descriptionHtml: description || "",
     };
-    if (imageUrl) {
-      productInput.images = [{ src: imageUrl }];
-    }
     const createResponse = await admin.graphql(`
       mutation productCreate($input: ProductInput!) {
         productCreate(input: $input) {
@@ -163,13 +159,46 @@ export async function action({ request }) {
       throw new Error(userErrors[0].message);
     }
     const product = createData.data.productCreate.product;
+    const productId = product.id;
     const variantId = product.variants.edges[0]?.node.id;
 
-    // 2. Update the price of the default variant
+    let createdImage = null;
+    if (imageUrl && productId) {
+      const mediaResponse = await admin.graphql(`
+        mutation productCreateMedia($productId: ID!, $media: [CreateMediaInput!]!) {
+          productCreateMedia(productId: $productId, media: $media) {
+            media {
+              ... on MediaImage {
+                id
+                image {
+                  url
+                }
+              }
+            }
+            mediaUserErrors {
+              field
+              message
+            }
+          }
+        }
+      `, {
+        variables: {
+          productId,
+          media: [{ originalSource: imageUrl, mediaContentType: "IMAGE" }]
+        }
+      });
+      const mediaData = await mediaResponse.json();
+      const mediaErrors = mediaData.data.productCreateMedia.mediaUserErrors;
+      if (mediaErrors && mediaErrors.length > 0) {
+        throw new Error(mediaErrors[0].message);
+      }
+      createdImage = mediaData.data.productCreateMedia.media[0]?.image?.url;
+    }
+
     let updatedVariant = null;
     if (variantId) {
       const updateVariantResponse = await admin.graphql(`
-        mutation variantUpdate($input: ProductVariantInput!) {
+        mutation productVariantUpdate($input: ProductVariantInput!) {
           productVariantUpdate(input: $input) {
             productVariant {
               id
@@ -201,7 +230,8 @@ export async function action({ request }) {
       success: true,
       product: {
         ...product,
-        price: updatedVariant ? updatedVariant.price : price
+        price: updatedVariant ? updatedVariant.price : price,
+        image: createdImage || ""
       }
     });
     
