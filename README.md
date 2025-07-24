@@ -1,10 +1,55 @@
-# Shopify Product Listing App
+# Shopify Product Management App
+## Core Features
 
-A Shopify embedded app built with Remix and Polaris that fetches products from the Shopify Admin API, displays them in a clean, responsive UI, and allows product creation—all deployable on Render.com’s free tier.
+### Product Management
 
----
+- View all products with their details
+- Create new products with title and description
+- Future support for pricing, inventory, and images
+
+### List Management
+
+- Filter by status (Active/Draft)
+- Sort by title (ascending/descending)
+- Search products by title
+
+### User Experience
+
+- Responsive Polaris UI components
+- Real-time form validation
+- Error handling and notifications
+- Loading and empty states embedded app built with Remix and Polaris that allows you to manage products in your Shopify store. The app provides a clean, responsive interface for viewing and creating products, with features like filtering, sorting, and search capabilities.
+
+## Live Demo
+- **Deployment URL:** [https://shopifyproductapp.onrender.com](https://shopifyproductapp.onrender.com)
+- **GitHub Repository:** [https://github.com/ZayMinKhant/ShopifyProductApp](https://github.com/ZayMinKhant/ShopifyProductApp)
 
 ## Features
+
+- **Product Management:**
+  - View all products with their details
+  - Create new products with title and description
+  - Future support for pricing, inventory, and images
+- **List Features:**
+  - Filter by status (Active/Draft) and stock level
+  - Sort by title (ascending/descending)
+  - Search products by title
+- **User Experience:**
+  - Responsive Polaris UI components
+  - Real-time validation
+  - Error handling and notifications
+  - Loading states and empty statest Listing App
+
+# Shopify Product Management App
+
+A Shopify embedded app built with Remix and Polaris for managing products in your Shopify store. Features a clean, responsive interface for viewing and creating products.
+
+## Project Links
+
+- **Live Demo:** [https://your-app.onrender.com](https://your-app.onrender.com)
+- **Repository:** [https://github.com/ZayMinKhant/ShopifyProductApp](https://github.com/ZayMinKhant/ShopifyProductApp)
+
+## Core Features
 
 - **Product Listing:** Fetches and displays products from your Shopify store using the Admin API.
 - **Responsive UI:** Built with Shopify Polaris for a native Shopify admin experience.
@@ -26,14 +71,15 @@ A Shopify embedded app built with Remix and Polaris that fetches products from t
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- Shopify Partner account
-- Shopify development store
+- Node.js 18 or higher
+- A Shopify Partner account
+- A Shopify development store
+- Git installed on your machine
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/product-app.git
-cd product-app
+git clone https://github.com/ZayMinKhant/ShopifyProductApp.git
+cd ShopifyProductApp
 ```
 
 ### 2. Install Dependencies
@@ -73,31 +119,79 @@ npm run dev
 - Returns: `[{ id, title, status, price, image, inventoryQuantity }]`
 
 ### `POST /api/products`
-- Creates a new product with title, price, and description.
-- Body: `FormData` with `title`, `price`, `description` (optional)
-- Returns: `{ success, product }` or `{ error }`
+- Creates a new product with required title and optional description
+- Body: `FormData` with:
+  - `title` (required): Product title (min 2 characters)
+  - `description` (optional): Product description
+- Returns: 
+  - Success: `{ success: true, product, message }`
+  - Error: `{ success: false, error }`
 
 ---
 
-## UI Features
-- **ResourceList**: Displays products with title, price, image, status, and stock.
-- **Filters**: By status and stock.
-- **Sort**: By title or price.
-- **Search**: By product title.
-- **Modal**: For product creation.
-- **Toast**: For feedback.
-- **Responsive**: Works on all devices.
+## Tech Stack
+- **Frontend:**
+  - React with Remix
+  - Shopify Polaris UI components
+  - GraphQL for API communication
+- **Backend:**
+  - Remix server
+  - Prisma for database management
+  - Shopify Admin API integration
+- **Development:**
+  - TypeScript for type safety
+  - ESLint for code quality
+  - Prettier for code formatting
+
+## Error Handling
+- Frontend form validation
+- Backend data validation
+- GraphQL error handling
+- User-friendly error messages
+- Network error handling
 
 ---
 
-## Deployment (Render.com)
+## Deployment Guide
 
-1. **Push to GitHub**
-   ```bash
-   git add .
-   git commit -m "Initial commit"
-   git branch -M main
-   git remote add origin https://github.com/yourusername/product-app.git
+### Deploying to Render.com
+
+1. Create a new Web Service on Render.com
+2. Connect your GitHub repository
+3. Configure the following settings:
+   - **Environment:** Node
+   - **Build Command:** `npm install && npm run build`
+   - **Start Command:** `npm run start`
+   - **Auto-Deploy:** Yes
+
+4. Add environment variables:
+   ```
+   SHOPIFY_API_KEY=your_api_key
+   SHOPIFY_API_SECRET=your_api_secret
+   SCOPES=read_products,write_products
+   SHOPIFY_APP_URL=https://your-app.onrender.com
+   SHOPIFY_DOMAIN=your-store
+   ```
+
+5. Deploy the app and wait for the build to complete
+
+### Post-Deployment Steps
+
+1. Update your Shopify app settings with the new URL
+2. Test the app installation flow
+3. Verify product management functionality
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details
    git push -u origin main
    ```
 2. **Create a Render.com Web Service**

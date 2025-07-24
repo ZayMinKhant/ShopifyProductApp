@@ -66,6 +66,8 @@ export default function Index() {
     inventory: ""
   });
 
+  const [creationStep, setCreationStep] = useState(null);
+
   const [toastActive, setToastActive] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastStatus, setToastStatus] = useState(undefined); 
@@ -88,7 +90,7 @@ export default function Index() {
   }, [statusFilter, stockFilter, debouncedQuery, sortValue]);
 
   useEffect(() => {
-    if (createFetcher.data) {
+    if (createFetcher.state === "idle" && createFetcher.data) {
       if (createFetcher.data.success) {
         setModalActive(false);
         setNewProduct({ title: "", description: "", price: "", image: "", inventory: "" });
@@ -101,9 +103,10 @@ export default function Index() {
         setToastStatus("error");
         setToastActive(true);
       }
+      setCreationStep(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [createFetcher.data]);
+  }, [createFetcher.state, createFetcher.data]);
 
   useEffect(() => {
     if (fetcher.data) {
@@ -112,8 +115,7 @@ export default function Index() {
           fetcher.data.products.forEach((product, idx) => {
             if (
               typeof product.id !== 'string' ||
-              typeof product.title !== 'string' ||
-              typeof product.description !== 'string'
+              typeof product.title !== 'string'
             ) {
               // eslint-disable-next-line no-console
               console.warn(`Product at index ${idx} is missing required fields or has wrong types`, product);
@@ -164,8 +166,10 @@ export default function Index() {
   }, []);
 
   const handleModalToggle = useCallback(() => {
-    setModalActive(!modalActive);
-  }, [modalActive]);
+    if (createFetcher.state !== "submitting") {
+      setModalActive(!modalActive);
+    }
+  }, [modalActive, createFetcher.state]);
 
   const handleProductChange = useCallback((field, value) => {
     setNewProduct(prev => ({
@@ -187,12 +191,20 @@ export default function Index() {
       setToastActive(true);
       return;
     }
+
+    let imageUrl = newProduct.image.trim();
+    if (imageUrl && !/^https?:\/\//i.test(imageUrl)) {
+      imageUrl = `https://${imageUrl}`;
+    }
+
     const formData = new FormData();
     formData.append("title", newProduct.title);
     formData.append("description", newProduct.description);
     formData.append("price", newProduct.price);
-    formData.append("image", newProduct.image);
+    formData.append("image", imageUrl);
     formData.append("inventory", newProduct.inventory);
+    
+    setCreationStep("product");
     createFetcher.submit(formData, {
       method: "POST",
       action: "/api/products"
@@ -344,6 +356,7 @@ export default function Index() {
         <CreateProductModal
           open={modalActive}
           loading={createFetcher.state === "submitting"}
+          creationStep={creationStep}
           newProduct={newProduct}
           onChange={handleProductChange}
           onCreate={handleCreateProduct}
