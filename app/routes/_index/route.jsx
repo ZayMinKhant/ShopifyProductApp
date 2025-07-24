@@ -19,7 +19,6 @@ export default function App() {
   return (
     <div className={styles.index}>
       <div className={styles.content}>
-        <img src="/public/favicon.ico" alt="App Logo" style={{ width: 64, height: 64, margin: '0 auto 1rem' }} />
         <h1 className={styles.heading}>Welcome to Shopify Product Manager</h1>
         <p className={styles.text}>
           Easily view, filter, and create products in your Shopify store. Fast, modern, and built for merchants.

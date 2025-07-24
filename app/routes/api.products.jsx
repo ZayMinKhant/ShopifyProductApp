@@ -63,7 +63,6 @@ export async function loader({ request }) {
       inventoryQuantity: node.variants.edges[0]?.node.inventoryQuantity || 0
     }));
 
-    // Server-side filtering
     if (status.length > 0 && status[0] !== "") {
       products = products.filter(product => status.includes(product.status.toLowerCase()));
     }
@@ -79,7 +78,6 @@ export async function loader({ request }) {
       );
     }
 
-    // Server-side sorting
     products.sort((a, b) => {
       switch (sort) {
         case "title-asc":
@@ -107,102 +105,43 @@ export async function loader({ request }) {
 }
 
 export async function action({ request }) {
-  try {
-    const { admin } = await authenticate.admin(request);
-    const formData = await request.formData();
-    const title = formData.get("title");
-    const price = formData.get("price");
-    const description = formData.get("description");
-    const imageUrl = formData.get("imageUrl");
-
-    if (!title || !price) {
-      return json({ 
-        error: "Title and price are required",
-        success: false 
-      }, { status: 400 });
-    }
-
-    const productInput = {
-      title,
-      descriptionHtml: description || "",
-    };
-    const createResponse = await admin.graphql(`
-      mutation productCreate($input: ProductInput!) {
-        productCreate(input: $input) {
-          product {
-            id
-            title
-            variants(first: 1) {
-              edges {
-                node {
-                  id
-                  price
-                }
-              }
-            }
-          }
-          userErrors {
-            field
-            message
-          }
-        }
+    try {
+      const { admin } = await authenticate.admin(request);
+      const formData = await request.formData();
+      const title = formData.get("title");
+      const price = formData.get("price");
+      const description = formData.get("description");
+      const imageUrl = formData.get("imageUrl");
+  
+      if (!title || !price) {
+        return json({ 
+          error: "Title and price are required",
+          success: false 
+        }, { status: 400 });
       }
-    `, {
-      variables: {
-        input: productInput
+  
+      console.log("Creating product with:", { title, price, description, imageUrl });
+  
+      if (imageUrl && !isValidImageUrl(imageUrl)) {
+        return json({ 
+          error: "Please provide a valid image URL (must start with http:// or https://)",
+          success: false 
+        }, { status: 400 });
       }
-    });
+  
+      // 1. Create the product (no variants, no image)
+      const productInput = {
+        title,
+        descriptionHtml: description || ""
+      };
 
-    const createData = await createResponse.json();
-    const userErrors = createData.data.productCreate.userErrors;
-    if (userErrors && userErrors.length > 0) {
-      throw new Error(userErrors[0].message);
-    }
-    const product = createData.data.productCreate.product;
-    const productId = product.id;
-    const variantId = product.variants.edges[0]?.node.id;
-
-    let createdImage = null;
-    if (imageUrl && productId) {
-      const mediaResponse = await admin.graphql(`
-        mutation productCreateMedia($productId: ID!, $media: [CreateMediaInput!]!) {
-          productCreateMedia(productId: $productId, media: $media) {
-            media {
-              ... on MediaImage {
-                id
-                image {
-                  url
-                }
-              }
-            }
-            mediaUserErrors {
-              field
-              message
-            }
-          }
-        }
-      `, {
-        variables: {
-          productId,
-          media: [{ originalSource: imageUrl, mediaContentType: "IMAGE" }]
-        }
-      });
-      const mediaData = await mediaResponse.json();
-      const mediaErrors = mediaData.data.productCreateMedia.mediaUserErrors;
-      if (mediaErrors && mediaErrors.length > 0) {
-        throw new Error(mediaErrors[0].message);
-      }
-      createdImage = mediaData.data.productCreateMedia.media[0]?.image?.url;
-    }
-
-    let updatedVariant = null;
-    if (variantId) {
-      const updateVariantResponse = await admin.graphql(`
-        mutation productVariantUpdate($input: ProductVariantInput!) {
-          productVariantUpdate(input: $input) {
-            productVariant {
+      const createResponse = await admin.graphql(`
+        mutation productCreate($product: ProductCreateInput!) {
+          productCreate(product: $product) {
+            product {
               id
-              price
+              title
+              descriptionHtml
             }
             userErrors {
               field
@@ -212,34 +151,67 @@ export async function action({ request }) {
         }
       `, {
         variables: {
-          input: {
-            id: variantId,
-            price: price
-          }
+          product: productInput
         }
       });
-      const updateVariantData = await updateVariantResponse.json();
-      const variantErrors = updateVariantData.data.productVariantUpdate.userErrors;
-      if (variantErrors && variantErrors.length > 0) {
-        throw new Error(variantErrors[0].message);
-      }
-      updatedVariant = updateVariantData.data.productVariantUpdate.productVariant;
-    }
 
-    return json({ 
-      success: true,
-      product: {
-        ...product,
-        price: updatedVariant ? updatedVariant.price : price,
-        image: createdImage || ""
+      const createData = await createResponse.json();
+      if (createData.errors) {
+        throw new Error(createData.errors[0].message);
       }
-    });
-    
-  } catch (error) {
-    console.error("Error creating product:", error);
-    return json({ 
-      error: error.message || (typeof error === 'string' ? error : JSON.stringify(error)) || "Failed to create product. Please try again later.",
-      success: false 
-    }, { status: 500 });
+      const userErrors = createData.data.productCreate.userErrors;
+      if (userErrors && userErrors.length > 0) {
+        throw new Error(userErrors[0].message);
+      }
+      const product = createData.data.productCreate.product;
+      if (!product) {
+        throw new Error("Product creation failed - no product returned");
+      }
+
+      // Prepare the created product object
+      const createdProduct = {
+        id: product.id,
+        title: product.title,
+        description: product.descriptionHtml
+      };
+
+      return json({ 
+        success: true,
+        product: createdProduct,
+        message: "Product created successfully!"
+      });
+      
+    } catch (error) {
+      console.error("Error creating product:", error);
+      
+      let errorMessage = "Failed to create product. Please try again later.";
+      
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
+      if (errorMessage.includes("Image")) {
+        errorMessage = "Failed to add image. Please check the image URL and try again.";
+      } else if (errorMessage.includes("price")) {
+        errorMessage = "Invalid price format. Please enter a valid price.";
+      } else if (errorMessage.includes("title")) {
+        errorMessage = "Invalid product title. Please enter a valid title.";
+      }
+  
+      return json({ 
+        error: errorMessage,
+        success: false 
+      }, { status: 500 });
+    }
+  }
+
+function isValidImageUrl(url) {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+  } catch {
+    return false;
   }
 }

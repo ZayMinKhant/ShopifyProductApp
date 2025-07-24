@@ -38,29 +38,11 @@ export default function CreateProductModal({ open, loading, newProduct, onChange
             autoComplete="off"
           />
           <TextField
-            label="Price"
-            value={newProduct.price}
-            onChange={(value) => onChange("price", value)}
-            placeholder="0.00"
-            type="number"
-            step="0.01"
-            min="0"
-            prefix="$"
-            autoComplete="off"
-          />
-          <TextField
             label="Description"
             value={newProduct.description}
             onChange={(value) => onChange("description", value)}
             placeholder="Enter product description"
             multiline={3}
-            autoComplete="off"
-          />
-          <TextField
-            label="Image URL"
-            value={newProduct.imageUrl || ""}
-            onChange={(value) => onChange("imageUrl", value)}
-            placeholder="https://example.com/image.jpg"
             autoComplete="off"
           />
         </FormLayout>

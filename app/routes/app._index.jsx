@@ -60,9 +60,7 @@ export default function Index() {
   const [modalActive, setModalActive] = useState(false);
   const [newProduct, setNewProduct] = useState({
     title: "",
-    price: "",
-    description: "",
-    imageUrl: ""
+    description: ""
   });
 
   const [toastActive, setToastActive] = useState(false);
@@ -90,7 +88,7 @@ export default function Index() {
     if (createFetcher.data) {
       if (createFetcher.data.success) {
         setModalActive(false);
-        setNewProduct({ title: "", price: "", description: "", imageUrl: "" });
+        setNewProduct({ title: "", description: "" });
         setToastMessage("Product created successfully!");
         setToastStatus("success");
         setToastActive(true);
@@ -111,10 +109,7 @@ export default function Index() {
             if (
               typeof product.id !== 'string' ||
               typeof product.title !== 'string' ||
-              typeof product.status !== 'string' ||
-              typeof product.price !== 'string' ||
-              typeof product.image !== 'string' ||
-              typeof product.inventoryQuantity !== 'number'
+              typeof product.description !== 'string'
             ) {
               // eslint-disable-next-line no-console
               console.warn(`Product at index ${idx} is missing required fields or has wrong types`, product);
@@ -178,11 +173,7 @@ export default function Index() {
   const handleCreateProduct = useCallback(() => {
     const formData = new FormData();
     formData.append("title", newProduct.title);
-    formData.append("price", newProduct.price);
     formData.append("description", newProduct.description);
-    if (newProduct.imageUrl) {
-      formData.append("imageUrl", newProduct.imageUrl);
-    }
     createFetcher.submit(formData, {
       method: "POST",
       action: "/api/products"
