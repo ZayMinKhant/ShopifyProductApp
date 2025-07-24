@@ -140,27 +140,68 @@ export async function action({ request }) {
       );
     }
 
-    // Step 1: Create product with title and description only (no variants)
     const productInput = {
       title,
       descriptionHtml: description || "",
+      variants: [
+        {
+          price: price || "0.00",
+          inventoryItem: {
+            tracked: true,
+          },
+          inventoryQuantities: {
+            availableQuantity: inventory ? parseInt(inventory) : 0,
+            locationId: "gid://shopify/Location/95113380152",
+          },
+        },
+      ],
     };
+
+    const mediaInput = image
+      ? [
+          {
+            originalSource: image,
+            mediaContentType: "IMAGE",
+          },
+        ]
+      : [];
 
     const createResponse = await admin.graphql(
       `
-        mutation productCreate($product: ProductCreateInput!) {
-          productCreate(product: $product) {
+        mutation productCreate($input: ProductInput!, $media: [CreateMediaInput!]) {
+          productCreate(input: $input, media: $media) {
             product {
               id
               title
               descriptionHtml
+              variants(first: 1) {
+                edges {
+                  node {
+                    price
+                    inventoryQuantity
+                  }
+                }
+              }
+              images(first: 1) {
+                edges {
+                  node {
+                    url
+                  }
+                }
+              }
             }
-            userErrors { field message }
+            userErrors {
+              field
+              message
+            }
           }
         }
       `,
       {
-        variables: { product: productInput },
+        variables: {
+          input: productInput,
+          media: mediaInput,
+        },
       },
     );
     const createData = await createResponse.json();
@@ -176,89 +217,14 @@ export async function action({ request }) {
       throw new Error("Product creation failed - no product returned");
     }
 
-    // Step 2: Add variant using productVariantCreate if available
-    let variantId = null;
-    let imageUrl = "";
-    let variantPrice = price;
-    let variantInventory = inventory ? parseInt(inventory) : 0;
-    try {
-      const variantInput = {
-        productId: product.id,
-        price: price || "0.00",
-        inventoryQuantity: variantInventory,
-      };
-      const variantResponse = await admin.graphql(
-        `
-          mutation productVariantCreate($variant: ProductVariantInput!) {
-            productVariantCreate(productVariant: $variant) {
-              productVariant { id price inventoryQuantity }
-              userErrors { field message }
-            }
-          }
-        `,
-        {
-          variables: { variant: variantInput },
-        },
-      );
-      const variantData = await variantResponse.json();
-      if (variantData.errors) {
-        throw new Error(variantData.errors[0].message);
-      }
-      const vUserErrors = variantData.data.productVariantCreate.userErrors;
-      if (vUserErrors && vUserErrors.length > 0) {
-        throw new Error(vUserErrors[0].message);
-      }
-      const variantNode = variantData.data.productVariantCreate.productVariant;
-      if (variantNode) {
-        variantId = variantNode.id;
-        variantPrice = variantNode.price;
-        variantInventory = variantNode.inventoryQuantity;
-      }
-    } catch (variantError) {
-      // If productVariantCreate is not available, instruct user to upgrade API version
-      return json({
-        error: "Your Shopify API version does not support productVariantCreate. Please upgrade to the latest stable API version.",
-        success: false,
-      }, { status: 500 });
-    }
-
-    // Step 3: Add image if provided
-    if (image && image.trim() !== "") {
-      const imageInput = {
-        productId: product.id,
-        src: image,
-      };
-      const imageResponse = await admin.graphql(
-        `
-          mutation productImageCreate($image: ImageInput!) {
-            productImageCreate(image: $image) {
-              image { id url }
-              userErrors { field message }
-            }
-          }
-        `,
-        {
-          variables: { image: imageInput },
-        },
-      );
-      const imageData = await imageResponse.json();
-      if (imageData.errors) {
-        throw new Error(imageData.errors[0].message);
-      }
-      const iUserErrors = imageData.data.productImageCreate.userErrors;
-      if (iUserErrors && iUserErrors.length > 0) {
-        throw new Error(iUserErrors[0].message);
-      }
-      imageUrl = imageData.data.productImageCreate.image.url;
-    }
-
     const createdProduct = {
       id: product.id,
       title: product.title,
       description: product.descriptionHtml,
-      price: variantPrice,
-      image: imageUrl || image || "",
-      inventoryQuantity: variantInventory,
+      price: product.variants.edges[0]?.node.price || "0.00",
+      image: product.images.edges[0]?.node.url || "",
+      inventoryQuantity:
+        product.variants.edges[0]?.node.inventoryQuantity || 0,
     };
 
     return json({
