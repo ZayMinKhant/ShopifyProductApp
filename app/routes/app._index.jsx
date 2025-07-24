@@ -67,6 +67,7 @@ export default function Index() {
 
   const [toastActive, setToastActive] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [toastStatus, setToastStatus] = useState(undefined); 
 
   const pageSize = 50;
 
@@ -85,16 +86,19 @@ export default function Index() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter, stockFilter, debouncedQuery, sortValue]);
 
+  // Handle create product response
   useEffect(() => {
     if (createFetcher.data) {
       if (createFetcher.data.success) {
         setModalActive(false);
         setNewProduct({ title: "", price: "", description: "", imageUrl: "" });
         setToastMessage("Product created successfully!");
+        setToastStatus("success");
         setToastActive(true);
         fetchProducts();
       } else if (createFetcher.data.error) {
         setToastMessage(createFetcher.data.error);
+        setToastStatus("error");
         setToastActive(true);
       }
     }
@@ -113,7 +117,11 @@ export default function Index() {
               typeof product.image !== 'string' ||
               typeof product.inventoryQuantity !== 'number'
             ) {
+              // eslint-disable-next-line no-console
               console.warn(`Product at index ${idx} is missing required fields or has wrong types`, product);
+              setToastMessage(`Warning: Product at index ${idx} is missing required fields or has wrong types.`);
+              setToastStatus("warning");
+              setToastActive(true);
             }
           });
         }
@@ -123,6 +131,7 @@ export default function Index() {
         setError(fetcher.data.error);
         setProducts([]);
         setToastMessage(fetcher.data.error);
+        setToastStatus("error");
         setToastActive(true);
       }
       setLoading(false);
@@ -236,6 +245,7 @@ export default function Index() {
     <Toast
       content={toastMessage}
       onDismiss={() => setToastActive(false)}
+      status={toastStatus}
     />
   ) : null;
 

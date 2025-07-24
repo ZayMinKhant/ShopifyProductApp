@@ -1,14 +1,15 @@
 FROM node:20-alpine
 
-RUN apk add --no-cache openssl
+RUN apk add --no-cache openssl libc6-compat
 
 WORKDIR /app
 
 COPY package.json package-lock.json* ./
+COPY prisma ./prisma/
 
-RUN npm install --omit=dev && npm cache clean --force
+RUN npm install
 
-RUN npm uninstall @shopify/cli @shopify/theme 2>/dev/null || true
+RUN npx prisma generate
 
 COPY . .
 
@@ -16,4 +17,8 @@ RUN npm run build
 
 EXPOSE 3000
 
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["npm", "start"]
