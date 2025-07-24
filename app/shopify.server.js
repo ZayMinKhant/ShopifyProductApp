@@ -20,6 +20,7 @@ const shopify = shopifyApp({
     unstable_newEmbeddedAuthStrategy: true,
     removeRest: true,
   },
+  isEmbeddedApp: true,
   ...(process.env.SHOP_CUSTOM_DOMAIN
     ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
     : {}),
