@@ -27,7 +27,7 @@ scopes = "write_products,read_products"
 
 [auth]
 redirect_urls = ["https://shopifyproductapp.onrender.com/api/auth
-","https://shopifyproductapp.onrender.com/api/auth/callback"]
+","https://shopifyproductapp.onrender.com/api/auth/callback","https://shopifyproductapp.onrender.com/auth/shopify/callback"]
 
 [pos]
 embedded = false
