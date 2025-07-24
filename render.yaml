@@ -16,3 +16,5 @@ services:
         value: read_products,write_products
       - key: SHOPIFY_APP_URL
         sync: false
+      - key: VITE_SHOP_DOMAIN
+        sync: false
