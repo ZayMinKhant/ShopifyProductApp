@@ -3,7 +3,7 @@
 client_id = "0c591727901b8aa965aca16dba09c1d0"
 name = "product-app"
 handle = "product-app-126"
-application_url = "https://talk-affordable-portal-hurt.trycloudflare.com"
+application_url = "https://declare-therapy-wisconsin-asked.trycloudflare.com"
 embedded = true
 
 [build]
@@ -26,7 +26,7 @@ api_version = "2025-07"
 scopes = "write_products"
 
 [auth]
-redirect_urls = ["https://talk-affordable-portal-hurt.trycloudflare.com/auth/callback", "https://talk-affordable-portal-hurt.trycloudflare.com/auth/shopify/callback", "https://talk-affordable-portal-hurt.trycloudflare.com/api/auth/callback"]
+redirect_urls = ["https://declare-therapy-wisconsin-asked.trycloudflare.com/auth/callback", "https://declare-therapy-wisconsin-asked.trycloudflare.com/auth/shopify/callback", "https://declare-therapy-wisconsin-asked.trycloudflare.com/api/auth/callback"]
 
 [pos]
 embedded = false

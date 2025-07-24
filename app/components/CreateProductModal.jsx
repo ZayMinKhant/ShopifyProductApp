@@ -1,0 +1,70 @@
+import React from "react";
+import { Modal, FormLayout, TextField } from "@shopify/polaris";
+
+/**
+ * @param {Object} props
+ * @param {boolean} props.open
+ * @param {boolean} props.loading
+ * @param {Object} props.newProduct
+ * @param {function} props.onChange
+ * @param {function} props.onCreate
+ * @param {function} props.onClose
+ */
+export default function CreateProductModal({ open, loading, newProduct, onChange, onCreate, onClose }) {
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Create New Product"
+      primaryAction={{
+        content: "Create Product",
+        onAction: onCreate,
+        loading
+      }}
+      secondaryActions={[
+        {
+          content: "Cancel",
+          onAction: onClose
+        }
+      ]}
+    >
+      <Modal.Section>
+        <FormLayout>
+          <TextField
+            label="Product Title"
+            value={newProduct.title}
+            onChange={(value) => onChange("title", value)}
+            placeholder="Enter product title"
+            autoComplete="off"
+          />
+          <TextField
+            label="Price"
+            value={newProduct.price}
+            onChange={(value) => onChange("price", value)}
+            placeholder="0.00"
+            type="number"
+            step="0.01"
+            min="0"
+            prefix="$"
+            autoComplete="off"
+          />
+          <TextField
+            label="Description"
+            value={newProduct.description}
+            onChange={(value) => onChange("description", value)}
+            placeholder="Enter product description"
+            multiline={3}
+            autoComplete="off"
+          />
+          <TextField
+            label="Image URL"
+            value={newProduct.imageUrl || ""}
+            onChange={(value) => onChange("imageUrl", value)}
+            placeholder="https://example.com/image.jpg"
+            autoComplete="off"
+          />
+        </FormLayout>
+      </Modal.Section>
+    </Modal>
+  );
+} 
