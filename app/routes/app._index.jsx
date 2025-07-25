@@ -15,6 +15,11 @@ import {
 import ProductItem from "../components/ProductItem";
 import CreateProductModal from "../components/CreateProductModal";
 import useDebounce from "../hooks/useDebounce";
+import { redirectToShopifyOrAppRoot } from "@shopify/shopify-app-remix/server";
+
+export const loader = async ({ request }) => {
+  return redirectToShopifyOrAppRoot({ request });
+};
 
 export const STATUS_FILTER_OPTIONS = [
   { label: "Active", value: "active" },
