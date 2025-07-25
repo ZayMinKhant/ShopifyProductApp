@@ -17,11 +17,6 @@ A Shopify embedded app built with Remix and Polaris for managing products in you
 
 ---
 
-## Screenshots
-> _Add screenshots or a GIF of your app here for best results._
-
----
-
 ## Getting Started
 
 ### Prerequisites
@@ -136,13 +131,6 @@ npm run dev
 2. Test the app installation flow
 3. Verify product management functionality
 
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ## Troubleshooting
 - **Common issues and solutions:**
