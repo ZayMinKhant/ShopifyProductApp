@@ -6,6 +6,11 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
+import { redirectToShopifyOrAppRoot } from "@shopify/shopify-app-remix/server";
+
+export const loader = async ({ request }) => {
+  return redirectToShopifyOrAppRoot({ request });
+};
 
 export default function App() {
   return (
