@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useFetcher, useRouteError, isRouteErrorResponse } from "@remix-run/react";
 import {
   Page,
@@ -30,8 +30,6 @@ export const SORT_OPTIONS = [
   { label: "Price Low-High", value: "price-asc" },
   { label: "Price High-Low", value: "price-desc" },
 ];
-
-const shopDomain = import.meta.env.VITE_SHOP_DOMAIN;
 
 /**
  * @typedef {Object} Product
@@ -73,6 +71,15 @@ export default function Index() {
   const [toastStatus, setToastStatus] = useState(undefined); 
 
   const pageSize = 50;
+
+  // Dynamically get shopDomain from URL query string
+  const shopDomain = useMemo(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("shop") || undefined;
+    }
+    return undefined;
+  }, []);
 
   const fetchProducts = useCallback(() => {
     setLoading(true);

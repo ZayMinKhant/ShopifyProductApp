@@ -94,7 +94,6 @@ SHOPIFY_API_KEY=your_api_key
 SHOPIFY_API_SECRET=your_api_secret
 SCOPES=read_products,write_products
 SHOPIFY_APP_URL=https://your-app.onrender.com
-VITE_SHOP_DOMAIN=your-store
 ```
 
 ### 4. Shopify App Configuration
@@ -109,6 +108,19 @@ npm run setup
 ```bash
 npm run dev
 ```
+
+---
+
+## Dynamic Shop Domain
+
+**Note:** The app now reads the shop domain dynamically from the URL query string. To use the app for a specific shop, include the `shop` parameter in the URL, for example:
+
+```
+https://your-app.onrender.com/app?shop=myshopdomain
+```
+
+- The `shop` value will be used to generate Shopify admin links and for shop-specific logic in the frontend.
+- The environment variable `VITE_SHOP_DOMAIN` is no longer used in the frontend code for determining the shop domain.
 
 ---
 
