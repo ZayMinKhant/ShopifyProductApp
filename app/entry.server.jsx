@@ -4,6 +4,7 @@ import { RemixServer } from "@remix-run/react";
 import { createReadableStreamFromReadable } from "@remix-run/node";
 import { isbot } from "isbot";
 import { addDocumentResponseHeaders } from "./shopify.server";
+import { shopifyApp } from "@shopify/shopify-app-remix/server"; // ✅ Add this
 
 export const streamTimeout = 5000;
 
@@ -14,6 +15,12 @@ export default async function handleRequest(
   remixContext,
 ) {
   addDocumentResponseHeaders(request, responseHeaders);
+
+  const cspHeader = shopifyApp.getEmbeddedAppCSP(request);
+  if (cspHeader) {
+    responseHeaders.set("Content-Security-Policy", cspHeader);
+  }
+
   const userAgent = request.headers.get("user-agent");
   const callbackName = isbot(userAgent ?? "") ? "onAllReady" : "onShellReady";
 
@@ -44,8 +51,6 @@ export default async function handleRequest(
       },
     );
 
-    // Automatically timeout the React renderer after 6 seconds, which ensures
-    // React has enough time to flush down the rejected boundary contents
     setTimeout(abort, streamTimeout + 1000);
   });
 }
