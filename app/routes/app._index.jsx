@@ -72,11 +72,10 @@ export default function Index() {
 
   const pageSize = 50;
 
-  // Dynamically get shopDomain from URL query string
   const shopDomain = useMemo(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      return params.get("shop") || undefined;
+      return params.get("shop") || 'zmk-test-store.myshopify.com';
     }
     return undefined;
   }, []);
