@@ -16,10 +16,10 @@ export default async function handleRequest(
 ) {
   addDocumentResponseHeaders(request, responseHeaders);
 
-  const cspHeader = shopifyApp.getEmbeddedAppCSP(request);
-  if (cspHeader) {
-    responseHeaders.set("Content-Security-Policy", cspHeader);
-  }
+  responseHeaders.set(
+    "Content-Security-Policy",
+    "frame-ancestors https://admin.shopify.com https://*.myshopify.com;"
+  );
 
   const userAgent = request.headers.get("user-agent");
   const callbackName = isbot(userAgent ?? "") ? "onAllReady" : "onShellReady";
