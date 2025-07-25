@@ -43,6 +43,7 @@ export const SORT_OPTIONS = [
  */
 
 export default function Index() {
+  console.log("[DEBUG] Index component rendered");
   const fetcher = useFetcher();
   const createFetcher = useFetcher();
 
@@ -98,6 +99,7 @@ export default function Index() {
 
   useEffect(() => {
     if (createFetcher.state === "idle" && createFetcher.data) {
+      console.log("[DEBUG] createFetcher.data:", createFetcher.data);
       if (createFetcher.data.success) {
         setModalActive(false);
         setNewProduct({ title: "", description: "", price: "", image: "", inventory: "" });
@@ -117,6 +119,7 @@ export default function Index() {
 
   useEffect(() => {
     if (fetcher.data) {
+      console.log("[DEBUG] fetcher.data:", fetcher.data);
       if (fetcher.data.success) {
         if (Array.isArray(fetcher.data.products)) {
           fetcher.data.products.forEach((product, idx) => {
@@ -297,6 +300,7 @@ export default function Index() {
   }
 
   if (error) {
+    console.error("[DEBUG] ErrorBoundary error:", error);
     return (
       <Page title="Products">
         <Layout>
@@ -384,33 +388,38 @@ export function ErrorBoundary() {
   } else if (error instanceof Error) {
     message = error.message;
   }
+  console.error("[DEBUG] ErrorBoundary error:", error);
   return (
-    <Page title="Error">
-      <Layout>
-        <Layout.Section>
-          <Card>
-            <div style={{ padding: 40, textAlign: "center" }}>
-              <div role="alert" style={{ color: 'red', marginBottom: 16 }}>{message}</div>
-            </div>
-          </Card>
-        </Layout.Section>
-      </Layout>
-    </Page>
+    <Frame>
+      <Page title="Error">
+        <Layout>
+          <Layout.Section>
+            <Card>
+              <div style={{ padding: 40, textAlign: "center" }}>
+                <div role="alert" style={{ color: 'red', marginBottom: 16 }}>{message}</div>
+              </div>
+            </Card>
+          </Layout.Section>
+        </Layout>
+      </Page>
+    </Frame>
   );
 }
 
 export function CatchBoundary() {
   return (
-    <Page title="Not Found">
-      <Layout>
-        <Layout.Section>
-          <Card>
-            <div style={{ padding: 40, textAlign: "center" }}>
-              <div role="alert" style={{ color: 'red', marginBottom: 16 }}>This page could not be found.</div>
-            </div>
-          </Card>
-        </Layout.Section>
-      </Layout>
-    </Page>
+    <Frame>
+      <Page title="Not Found">
+        <Layout>
+          <Layout.Section>
+            <Card>
+              <div style={{ padding: 40, textAlign: "center" }}>
+                <div role="alert" style={{ color: 'red', marginBottom: 16 }}>This page could not be found.</div>
+              </div>
+            </Card>
+          </Layout.Section>
+        </Layout>
+      </Page>
+    </Frame>
   );
 }
