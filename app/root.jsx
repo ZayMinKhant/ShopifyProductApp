@@ -6,10 +6,16 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
-import { redirectToShopifyOrAppRoot } from "@shopify/shopify-app-remix/server";
+import { redirect } from "@remix-run/node";
 
 export const loader = async ({ request }) => {
-  return redirectToShopifyOrAppRoot({ request });
+  const url = new URL(request.url);
+  const host = url.searchParams.get("host");
+  const shop = url.searchParams.get("shop");
+  if (!host || !shop) {
+    return redirect("/auth/login");
+  }
+  return null;
 };
 
 export default function App() {
