@@ -137,8 +137,7 @@ export async function action({ request }) {
 
     const productInput = {
       title,
-      descriptionHtml: description || "",
-      variants: [{ price: "0.00" }] // Add a default variant with 0 price
+      descriptionHtml: description || ""
     };
 
     console.log("Creating product with input:", JSON.stringify(productInput, null, 2));
