@@ -6,7 +6,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { AppProvider } from "@shopify/shopify-app-remix/react";
+import { AppProvider, Frame } from '@shopify/polaris';
 
 export const loader = async ({ request }) => {
   const url = new URL(request.url);
@@ -36,8 +36,10 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <AppProvider isEmbeddedApp apiKey={typeof window !== 'undefined' ? window.__SHOPIFY_API_KEY__ : process.env.SHOPIFY_API_KEY}>
-          <Outlet />
+        <AppProvider>
+          <Frame>
+            <Outlet />
+          </Frame>
         </AppProvider>
         <ScrollRestoration />
         <Scripts />

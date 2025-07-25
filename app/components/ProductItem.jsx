@@ -38,8 +38,6 @@ export default function ProductItem({ product, url, onClick }) {
       id={id}
       media={media}
       accessibilityLabel={`View details for ${title}`}
-      url={url}
-      external
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>

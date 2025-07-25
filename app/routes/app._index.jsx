@@ -86,7 +86,9 @@ export default function Index() {
     if (statusFilter.length > 0) url += `&status=${statusFilter.join(",")}`;
     if (stockFilter.length > 0) url += `&stock=${stockFilter.join(",")}`;
     if (debouncedQuery) url += `&query=${encodeURIComponent(debouncedQuery)}`;
-    if (sortValue) url += `&sort=${encodeURIComponent(sortValue)}`;
+    // Always use title-asc for backend if sorting by price
+    const backendSort = (sortValue === "price-asc" || sortValue === "price-desc") ? "title-asc" : sortValue;
+    if (backendSort) url += `&sort=${encodeURIComponent(backendSort)}`;
     fetcher.load(url);
   }, [fetcher, pageSize, statusFilter, stockFilter, debouncedQuery, sortValue]);
 
@@ -134,6 +136,14 @@ export default function Index() {
         setProducts(fetcher.data.products);
         setError(null);
       } else {
+        if ((sortValue === "price-asc" || sortValue === "price-desc") && !fetcher.data.products) {
+          if (!fetcher.data._frontendPriceSort) {
+            fetchProducts("title-asc");
+            fetcher.data._frontendPriceSort = true;
+            setToastActive(true);
+            return;
+          }
+        }
         setError(fetcher.data.error);
         setProducts([]);
         setToastMessage(fetcher.data.error);
@@ -142,7 +152,20 @@ export default function Index() {
       }
       setLoading(false);
     }
-  }, [fetcher.data]);
+  }, [fetcher.data, sortValue, fetchProducts]);
+
+  const displayedProducts = React.useMemo(() => {
+    if ((sortValue === "price-asc" || sortValue === "price-desc") && products.length > 0) {
+      const sorted = [...products].sort((a, b) => {
+        const priceA = parseFloat(a.price || "0");
+        const priceB = parseFloat(b.price || "0");
+        if (sortValue === "price-asc") return priceA - priceB;
+        else return priceB - priceA;
+      });
+      return sorted;
+    }
+    return products;
+  }, [products, sortValue]);
 
   const handleStatusFilterChange = useCallback((value) => {
     setStatusFilter(value);
@@ -325,7 +348,7 @@ export default function Index() {
               <Card>
               <ResourceList
                 resourceName={{ singular: "product", plural: "products" }}
-                items={products}
+                items={displayedProducts}
                 renderItem={(item) => {
                   const shopifyIdMatch = item.id.match(/Product\/(\d+)/);
                   const shopifyId = shopifyIdMatch ? shopifyIdMatch[1] : null;
