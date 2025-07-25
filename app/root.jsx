@@ -12,13 +12,23 @@ export const loader = async ({ request }) => {
   const url = new URL(request.url);
   const host = url.searchParams.get("host");
   const shop = url.searchParams.get("shop");
+  console.log("[DEBUG][root loader] url:", url.toString(), "host:", host, "shop:", shop);
   if (!host || !shop) {
     return redirect("/auth/login");
   }
-  return null;
+  return { host, shop };
 };
 
 export default function App() {
+  // Try to get loader data for debug output
+  let host = "";
+  let shop = "";
+  if (typeof window !== "undefined") {
+    const params = new URLSearchParams(window.location.search);
+    host = params.get("host") || "";
+    shop = params.get("shop") || "";
+  }
+  console.log("[DEBUG][root App] host:", host, "shop:", shop);
   return (
     <html>
       <head>
@@ -33,6 +43,10 @@ export default function App() {
         <Links />
       </head>
       <body>
+        {/* TEMPORARY DEBUG OUTPUT */}
+        <div style={{background: 'yellow', color: 'black', padding: '10px', zIndex: 9999}}>
+          <strong>DEBUG:</strong> host: {host} | shop: {shop}
+        </div>
         <AppProvider isEmbeddedApp apiKey={typeof window !== 'undefined' ? window.__SHOPIFY_API_KEY__ : process.env.SHOPIFY_API_KEY}>
           <Outlet />
         </AppProvider>
