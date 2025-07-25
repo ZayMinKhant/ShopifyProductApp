@@ -61,7 +61,6 @@ export default function Index() {
   const [newProduct, setNewProduct] = useState({
     title: "",
     description: "",
-    price: "",
     image: "",
     inventory: ""
   });
@@ -102,7 +101,7 @@ export default function Index() {
       console.log("[DEBUG] createFetcher.data:", createFetcher.data);
       if (createFetcher.data.success) {
         setModalActive(false);
-        setNewProduct({ title: "", description: "", price: "", image: "", inventory: "" });
+        setNewProduct({ title: "", description: "", image: "", inventory: "" });
         setToastMessage("Product created successfully!");
         setToastStatus("success");
         setToastActive(true);
@@ -195,12 +194,7 @@ export default function Index() {
       setToastActive(true);
       return;
     }
-    if (!newProduct.price || isNaN(Number(newProduct.price)) || Number(newProduct.price) < 0) {
-      setToastMessage("Valid price is required.");
-      setToastStatus("error");
-      setToastActive(true);
-      return;
-    }
+    // Removed price validation
 
     let imageUrl = newProduct.image.trim();
     if (imageUrl && !/^https?:\/\//i.test(imageUrl)) {
@@ -210,9 +204,9 @@ export default function Index() {
     const formData = new FormData();
     formData.append("title", newProduct.title);
     formData.append("description", newProduct.description);
-    formData.append("price", newProduct.price);
     formData.append("image", imageUrl);
     formData.append("inventory", newProduct.inventory);
+    // Removed price from formData
     
     setCreationStep("product");
     createFetcher.submit(formData, {
