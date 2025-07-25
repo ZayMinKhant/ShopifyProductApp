@@ -1,69 +1,23 @@
 # Shopify Product Management App
-## Core Features
 
-### Product Management
-
-- View all products with their details
-- Create new products with title and description
-- Future support for pricing, inventory, and images
-
-### List Management
-
-- Filter by status (Active/Draft)
-- Sort by title (ascending/descending)
-- Search products by title
-
-### User Experience
-
-- Responsive Polaris UI components
-- Real-time form validation
-- Error handling and notifications
-- Loading and empty states embedded app built with Remix and Polaris that allows you to manage products in your Shopify store. The app provides a clean, responsive interface for viewing and creating products, with features like filtering, sorting, and search capabilities.
+A Shopify embedded app built with Remix and Polaris for managing products in your Shopify store. Features a clean, responsive interface for viewing and creating products.
 
 ## Live Demo
 - **Deployment URL:** [https://shopifyproductapp.onrender.com](https://shopifyproductapp.onrender.com)
 - **GitHub Repository:** [https://github.com/ZayMinKhant/ShopifyProductApp](https://github.com/ZayMinKhant/ShopifyProductApp)
 
 ## Features
-
-- **Product Management:**
-  - View all products with their details
-  - Create new products with title and description
-  - Future support for pricing, inventory, and images
-- **List Features:**
-  - Filter by status (Active/Draft) and stock level
-  - Sort by title (ascending/descending)
-  - Search products by title
-- **User Experience:**
-  - Responsive Polaris UI components
-  - Real-time validation
-  - Error handling and notifications
-  - Loading states and empty statest Listing App
-
-# Shopify Product Management App
-
-A Shopify embedded app built with Remix and Polaris for managing products in your Shopify store. Features a clean, responsive interface for viewing and creating products.
-
-## Project Links
-
-- **Live Demo:** [https://your-app.onrender.com](https://your-app.onrender.com)
-- **Repository:** [https://github.com/ZayMinKhant/ShopifyProductApp](https://github.com/ZayMinKhant/ShopifyProductApp)
-
-## Core Features
-
-- **Product Listing:** Fetches and displays products from your Shopify store using the Admin API.
-- **Responsive UI:** Built with Shopify Polaris for a native Shopify admin experience.
-- **Filtering:** Filter products by status (Active/Draft) and stock (In Stock/Out of Stock).
-- **Sorting:** Sort products by title or price (ascending/descending).
-- **Search:** Search products by title.
-- **Product Creation:** Create new products directly from the UI.
-- **Error Handling:** User-friendly error and empty states.
-- **Toast Notifications:** Feedback for product creation and errors.
+- View all products with their details
+- Create new products with title and description
+- Filter by status (Active/Draft) and stock level
+- Sort by title (ascending/descending)
+- Search products by title
+- Responsive Polaris UI components
+- Error handling and notifications
 
 ---
 
 ## Screenshots
-
 > _Add screenshots or a GIF of your app here for best results._
 
 ---
@@ -99,6 +53,8 @@ SHOPIFY_APP_URL=https://your-app.onrender.com
 ### 4. Shopify App Configuration
 Edit `shopify.app.toml` to match your app’s URL and credentials.
 
+> **Note:** If you want to test the app in development, you may need to update `shopify.app.toml` to reflect your local tunnel (e.g., ngrok) or dev server URL, and ensure the allowed redirect URLs match your development environment. This is required for Shopify to correctly redirect and embed your app during local testing. You can update 'automatically_update_urls_on_dev = false' to 'true' easily.
+
 ### 5. Database Setup (Prisma)
 ```bash
 npm run setup
@@ -111,24 +67,11 @@ npm run dev
 
 ---
 
-## Dynamic Shop Domain
-
-**Note:** The app now reads the shop domain dynamically from the URL query string. To use the app for a specific shop, include the `shop` parameter in the URL, for example:
-
-```
-https://your-app.onrender.com/app?shop=myshopdomain
-```
-
-- The `shop` value will be used to generate Shopify admin links and for shop-specific logic in the frontend.
-- The environment variable `VITE_SHOP_DOMAIN` is no longer used in the frontend code for determining the shop domain.
-
----
-
 ## API Endpoints
 
 ### `GET /api/products`
 - Fetches up to 50 products from the Shopify Admin API.
-- Returns: `[{ id, title, status, price, image, inventoryQuantity }]`
+- Returns: `[{ id, title, status, price, image, inventoryQuantity }]` (price is from the first variant, if available)
 
 ### `POST /api/products`
 - Creates a new product with required title and optional description
@@ -201,54 +144,11 @@ https://your-app.onrender.com/app?shop=myshopdomain
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details
-   git push -u origin main
-   ```
-2. **Create a Render.com Web Service**
-   - Connect your GitHub repo
-   - Set build command: `npm install && npm run build`
-   - Set start command: `npm start`
-   - Add environment variables from your `.env`
-   - Deploy
-3. **Update Shopify App Settings**
-   - Set `SHOPIFY_APP_URL` and redirect URLs in your Partner Dashboard to your Render.com URL
-
----
-
-## Bonus Features
-- Filter by availability and status
-- Sort by price and title
-- Product creation with UI
-- Search functionality
-- Toast notifications
-
----
-
-## Submission
-- **GitHub Repo:** [yourusername/product-app](https://github.com/yourusername/product-app)
-- **Live App:** [your-app.onrender.com](https://your-app.onrender.com)
-- **README:** Includes setup, usage, and deployment instructions
-
----
-
-## Tech Stack
-- [Remix](https://remix.run/)
-- [Shopify Polaris](https://polaris.shopify.com/)
-- [Shopify App Bridge](https://shopify.dev/docs/apps/tools/app-bridge)
-- [Prisma](https://www.prisma.io/)
-- [Render.com](https://render.com/)
-
----
-
 ## Troubleshooting
 - **Common issues and solutions:**
   - See the [Shopify Remix template README](https://github.com/Shopify/shopify-app-template-remix) for more.
   - Ensure your `.env` and `shopify.app.toml` are correct.
   - Prisma errors? Run `npm run setup`.
-
----
 
 ## License
 MIT

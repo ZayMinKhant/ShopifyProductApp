@@ -43,7 +43,6 @@ export const SORT_OPTIONS = [
  */
 
 export default function Index() {
-  console.log("[DEBUG] Index component rendered");
   const fetcher = useFetcher();
   const createFetcher = useFetcher();
 
@@ -98,7 +97,6 @@ export default function Index() {
 
   useEffect(() => {
     if (createFetcher.state === "idle" && createFetcher.data) {
-      console.log("[DEBUG] createFetcher.data:", createFetcher.data);
       if (createFetcher.data.success) {
         setModalActive(false);
         setNewProduct({ title: "", description: "", image: "", inventory: "" });
@@ -118,7 +116,6 @@ export default function Index() {
 
   useEffect(() => {
     if (fetcher.data) {
-      console.log("[DEBUG] fetcher.data:", fetcher.data);
       if (fetcher.data.success) {
         if (Array.isArray(fetcher.data.products)) {
           fetcher.data.products.forEach((product, idx) => {

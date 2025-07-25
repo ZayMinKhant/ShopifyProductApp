@@ -140,8 +140,6 @@ export async function action({ request }) {
       descriptionHtml: description || ""
     };
 
-    console.log("Creating product with input:", JSON.stringify(productInput, null, 2));
-
     const productCreateResponse = await admin.graphql(
       `
         mutation productCreate($input: ProductInput!) {
